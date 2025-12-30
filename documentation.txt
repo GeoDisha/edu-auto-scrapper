@@ -1,7 +1,0 @@
-27dec:
-1.if a page open, and it redirects to another link, now updated that code to capture that url, and if that new url is a document then not to crawl it and store it, before since the new url is document, it returns that it is a document so storage was not done, because the classification is done based on the initial url not the redirected url, now updated code to do classification based on redirected url
-2.So generally upon new page new browser opens, which means no cached information of previous page is stored (which is good for current process because it doesnt collide or block with other pages causing erros), but if browser doesnt load a page due to timeout, we cannot increase timeout time, as it will slow down our code, so i changed code such that upon second retry open it on the same browser, so that the caches are stored, and upon opening the same page, now the processing time will be faster.
-3. added doc.google/ drive.google  as documents , missed these two in initial document classification, now added these both case also
-4. generally through network capture before since there are mainly pdfs , iadded pdfs detection only , now im adding detection for excel sheets, docs.google, word, ppt
-5. If a college website times out more than once, the crawler waits longer before trying again, and not immediately
-6. The crawler ensures it opens just one page at a time for each website, which reduces load on weak servers and avoids connection issues, before it might open many pages depending on the click
