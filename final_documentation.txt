@@ -1,0 +1,187 @@
+Documentation:
+ 
+-------------------------------------------------------------------------------------------------------------------------------------
+1.Executive Summary:
+
+    Given a URL as input, the system crawls the website and automatically extracts
+    all links/documents that are relevant to predefined keywords, including links/documents found on
+    internal pages.
+
+    The workflow operates as follows:
+
+    1. Initial page processing:
+    - The system visits the given URL.
+    - From the page, it extracts all visible hyperlinks along with their corresponding on-page text.
+
+    2. Keyword-based filtering:
+    - The extracted links are evaluated against a predefined set of category-specific keywords.
+    - Links that match these keywords are identified as category-relevant links.
+
+    3. Crawling of relevant links:
+    - The keyword-relevant links are then crawled recursively by visiting their
+        corresponding pages.
+
+    4. Document extraction:
+    - From the crawled pages, all document links are extracted, irrespective of
+        whether they match any category keywords.
+    - Supported document types include PDFs, Google Drive documents, Excel files,
+        PowerPoint files, images, ZIP/archive files, and other downloadable
+        resources.
+
+------------------------------------------------------------------------------------------------------------------------------------
+2.Pre Requisites / Dependencies:
+    a.In the bios: enable access to virtualization
+        bios->setup->security-> give access to Intel virtualization technology and  Intel Vi-d feature
+
+    b. 
+        In windows:
+            # install wsl in windows : ubuntu :https://ubuntu.com/tutorials/install-ubuntu-desktop#1-overview, 
+            # python >=3.11 version is used
+            # go to wsl: 
+            
+                create a directory and in terminal run the commands in this order:
+
+                sudo apt update
+                sudo apt install python3.12-venv
+
+                # create a virtual environment
+                python3 -m venv .venv
+                source .venv/bin/activate
+
+                #install playwright and its dependencies
+                pip install pandas playwright openpyxl
+                npx playwright install-deps
+                playwright install
+
+        In mac:
+            open terminal and run these commands in this order:
+                mkdir test-edu 
+                cd test-edu 
+
+                /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+                echo >> /Users/conglomerateit/.zprofile
+                echo 'eval "$(/usr/local/bin/brew shellenv)" ' >> /Users/conglomerateit/.zprofile
+                eval "$(/user/loca/bin/brew shellenv)"
+
+                #clone the github repo here :git clone {link to be cloned} or 
+                create a directory and keep the files manually:
+                mkdir edu-auto-scrapper #and keep the files manually 
+
+                cd edu-auto-scrapper
+
+                #create virtual environment
+                python3 -m venv venv
+                source venv/bin/activate 
+
+                #install playwright dependencies
+                pip install pandas playwright openpyxl
+                playwright install
+
+
+
+----------------------------------------------------------------------------------------------------------------
+3. Result
+
+    The output of the system is an Excel spreadsheet with a multi-level classification of the extracted data.
+
+    1. Column-wise classification:
+    - Each column represents a specific category.
+    - The category is determined based on the matched category keywords
+        (for example: NAAC, NBA, NIRF, AICTE, IQAC, etc.).
+
+    2. Row-wise classification:
+    - Rows are organized by the level of crawl depth.
+    - For each depth, entries are grouped using a row_type field, which includes:
+        a) Document links, categorized by document type:
+            - Google Drive documents
+            - PDF files
+            - PowerPoint files
+            - Image files
+            - ZIP / archive files
+            - Excel and other spreadsheet files
+        b) Non-document, category-related links
+            - Links that are not documents but match category-related keywords 
+        c) Non-document, other links
+            - Links that do not match any category keywords
+            - These are temporarily excluded from the Excel sheet to reduce noise
+
+    3. Cell content format:
+    - Each cell may contain multiple links.
+    - Each link is written on a separate line.
+    - The format for each entry is:
+        <URL> || <corresponding contextual text>
+    - Multiple entries within the same cell are separated by line breaks.
+
+    This structure clearly captures what content was found, at which depth,
+    under which category, and whether it is a document or a non-document link.
+    ```
+----------------------------------------------------------------------------------------------------------------------
+
+4. Troubleshooting Guide
+
+    - If any page related to a college encounters an error, the details are logged in
+    {output_excel_file_created}/logged_file.txt, including the college name, page url and the error description.
+
+    - When an error occurs, the system automatically skips the affected page and
+    continues processing the remaining pages without stopping execution.
+
+    - Logged errors can be reviewed in logged_file.txt to identify and fix
+    page-specific issues.
+
+    - After fixing the issue, the code can be re-run only for the affected college,
+    without reprocessing all colleges.
+
+
+----------------------------------------------------------------------------------------------------------------------------
+
+5. Step By Step Execution
+
+    The execution process involves two separate files:
+    one for link and Excel extraction, and another for PDF extraction.
+
+    1. Initial setup:
+    - Create a working directory.
+    - Place the colleges information Excel sheet in this directory.
+    - Place both code files (link extraction file and PDF extraction file) in the
+        same directory.
+
+    2. Link and Excel extraction (first file):
+    - Open  the 1st file(links_extraction_from_college) responsible for link extraction.
+      In the final execution cell, provide:
+        - The input Excel file name containing the list of colleges.
+        - The desired output folder name(eg: output_college_info)
+    - Execute the code.
+    - An output directory is generated(eg:output_college_info)
+    - Inside this directory, a separate Excel file is created for each college,
+        containing the extracted and classified links.
+
+    3. PDF extraction (second file):
+    - Open  the 2nd file(pdf_extraction_from_links) responsible for PDF extraction.
+    - Provide:
+        - The input folder(eg:output_college_info) as the output directory generated by the first file.
+        - The desired output folder name (eg: pdf_downloads) for storing PDFs.
+    - Execute the code.
+
+    4. Output structure:
+    - A PDF output folder(eg:pdf_extraction_from_links) is created.
+    - Inside this folder, each college has its own directory.
+    - Within each college directory, PDFs are organized into subfolders such as:
+        - no_year
+        - 2025
+        - 2024
+        - 2023
+        - and so on
+    - This year-based classification is performed using the extracted URL and
+        associated text.
+
+    This step-by-step process ensures a clean, structured, and easily navigable
+    output for both link data and downloaded documents.
+
+
+--------------------------------------------------------------------
+
+6. Source Code with Comments: 
+1st file(links_extraction_from_college): https://github.com/GeoDisha/edu-auto-scrapper/blob/main/links_extraction_from_college
+2nd file(pdf_extraction_from_links): https://github.com/GeoDisha/edu-auto-scrapper/blob/main/pdf_extraction_from_links.ipynb 
+
+data of college urls is available in : https://github.com/GeoDisha/edu-auto-scrapper/tree/main/data
